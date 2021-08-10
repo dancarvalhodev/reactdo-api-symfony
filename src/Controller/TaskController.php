@@ -41,6 +41,78 @@ class TaskController extends AbstractController
         $em->persist($task);
         $em->flush();
 
-        return new Response("post created");
+        return new Response("Task Created");
+    }
+
+    /**
+     * @Route("/task/{id}", name="read", methods={"GET"})
+     */
+    public function read(Request $request)
+    {
+        $id = $request->get('id');
+
+        $task = $this->getDoctrine()->getManager()
+            ->getRepository(Task::class)
+            ->find($id);
+
+        if (!$task) {
+            throw $this->createNotFoundException(
+                'No task found for id ' . $id
+            );
+        }
+
+        return new Response('Check out this great task: ' . $task->getTitle() . $task->getContent());
+    }
+
+    /**
+     * @Route("/update/{id}", name="update", methods={"PATCH"})
+     */
+    public function update(Request $request)
+    {
+        $id = $request->get('id');
+        $em = $this->getDoctrine()->getManager();
+
+        $task = $em
+            ->getRepository(Task::class)
+            ->find($id);
+
+        if (!$task) {
+            throw $this->createNotFoundException(
+                'No task found for id ' . $id
+            );
+        }
+
+        $newTask = new Task();
+        $newTask->setTitle($request->get('title'));
+        $newTask->setContent($request->get('content'));
+
+        $em->persist($newTask);
+        $em->flush();
+
+        return new Response('Task Updated');
+    }
+
+    /**
+     * @Route("/delete/{id}", name="delete", methods={"PUT"})
+     */
+    public function delete(Request $request)
+    {
+        $id = $request->get('id');
+        $em = $this->getDoctrine()->getManager();
+
+        $task = $em
+            ->getRepository(Task::class)
+            ->find($id);
+
+        if (!$task) {
+            throw $this->createNotFoundException(
+                'No task found for id ' . $id
+            );
+        }
+
+        $em->remove($task);
+        $em->flush();
+
+        return new Response('Task Deleted');
     }
 }
