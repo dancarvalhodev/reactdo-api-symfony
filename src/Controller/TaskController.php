@@ -61,7 +61,7 @@ class TaskController extends AbstractController
             );
         }
 
-        return new Response('Check out this great task: ' . $task->getTitle() . $task->getContent());
+        return new Response('Title: ' . $task->getTitle() . ' Content:' . $task->getContent());
     }
 
     /**
@@ -70,11 +70,9 @@ class TaskController extends AbstractController
     public function update(Request $request)
     {
         $id = $request->get('id');
+        $date = new DateTime('now');
         $em = $this->getDoctrine()->getManager();
-
-        $task = $em
-            ->getRepository(Task::class)
-            ->find($id);
+        $task = $em->getRepository(Task::class)->find($id);
 
         if (!$task) {
             throw $this->createNotFoundException(
@@ -82,11 +80,9 @@ class TaskController extends AbstractController
             );
         }
 
-        $newTask = new Task();
-        $newTask->setTitle($request->get('title'));
-        $newTask->setContent($request->get('content'));
-
-        $em->persist($newTask);
+        $task->setTitle($request->get('title'));
+        $task->setContent($request->get('content'));
+        $task->setCreated($date, 'Y-m-d H:i:s');
         $em->flush();
 
         return new Response('Task Updated');
