@@ -8,7 +8,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 /**
  * @Route("/api/tasks", name="tasks.")
@@ -20,9 +23,24 @@ class TaskController extends AbstractController
     public function index(): Response
     {
         return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/TaskController.php',
+            'message' => 'Welcome to Reactdo Api!',
         ]);
+    }
+
+    /**
+     * @Route("/all", name="all", methods={"GET"})
+     */
+    public function all(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager()->getRepository(Task::class);
+        $tasks = $em->findAll();
+
+        $encoders = [new XmlEncoder(), new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, $encoders);
+
+        $jsonContent = $serializer->serialize($tasks, 'json');
+        return new Response($jsonContent);
     }
 
     /**
@@ -41,7 +59,9 @@ class TaskController extends AbstractController
         $em->persist($task);
         $em->flush();
 
-        return new Response("Task Created");
+        return new Response(json_encode(array(
+            'status' => "Task Created"
+        )));
     }
 
     /**
@@ -61,7 +81,10 @@ class TaskController extends AbstractController
             );
         }
 
-        return new Response('Title: ' . $task->getTitle() . ' Content:' . $task->getContent());
+        return new Response(json_encode(array(
+            'title' => $task->getTitle(),
+            'content' => $task->getContent()
+        )));
     }
 
     /**
@@ -85,7 +108,9 @@ class TaskController extends AbstractController
         $task->setCreated($date, 'Y-m-d H:i:s');
         $em->flush();
 
-        return new Response('Task Updated');
+        return new Response(json_encode(array(
+            'status' => "Task Updated"
+        )));
     }
 
     /**
@@ -109,6 +134,8 @@ class TaskController extends AbstractController
         $em->remove($task);
         $em->flush();
 
-        return new Response('Task Deleted');
+        return new Response(json_encode(array(
+            'status' => "Task Deleted"
+        )));
     }
 }
