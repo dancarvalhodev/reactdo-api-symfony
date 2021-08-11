@@ -36,6 +36,7 @@ class TaskController extends AbstractController
 
         foreach($tasks as $id => $task){
             $tasklist[$id] = array(
+                'id' => $task->getId(),
                 'title' => $task->getTitle(),
                 'content' => $task->getContent(),
                 'created' => $task->getCreated(),
@@ -116,7 +117,7 @@ class TaskController extends AbstractController
     }
 
     /**
-     * @Route("/delete/{id}", name="delete", methods={"PUT"})
+     * @Route("/delete/{id}", name="delete", methods={"DELETE"})
      */
     public function delete(Request $request)
     {
