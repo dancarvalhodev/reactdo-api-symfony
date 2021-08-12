@@ -1,10 +1,6 @@
 # Reactdo Api Symfony
 Basic Api build using [symfony php framework](https://symfony.com/).
 
-
-
-
-
 # How to create database?
 Run `php bin/console doctrine:database:create`
 
