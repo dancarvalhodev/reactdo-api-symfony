@@ -32,7 +32,7 @@ class TaskController extends AbstractController
     public function all(Request $request)
     {
         $em = $this->getDoctrine()->getManager()->getRepository(Task::class);
-        $tasks = $em->findAll();
+        $tasks = $em->findBy(array(),array('created' => 'DESC'));
         $tasklist = [];
 
         foreach($tasks as $id => $task){
