@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 
+define('TIMEZONE', 'America/Sao_Paulo');
 
 /**
  * @Route("/api/tasks", name="tasks.")
@@ -51,6 +52,7 @@ class TaskController extends AbstractController
      */
     public function create(Request $request)
     {
+        date_default_timezone_set(TIMEZONE);
         $date = new DateTime('now');
 
         $task = new Task();
@@ -95,6 +97,8 @@ class TaskController extends AbstractController
      */
     public function update(Request $request)
     {
+        date_default_timezone_set(TIMEZONE);
+
         $id = $request->get('id');
         $date = new DateTime('now');
         $em = $this->getDoctrine()->getManager();
